@@ -1,13 +1,18 @@
-# react-native-multiple-choice
+# This is a Fork!
+For the Original Repo look [here](https://github.com/d-a-n/react-native-multiple-choice)
+
+The Goal of this Fork is to keep the Module compatible with the current React-Native Version. New (major) Features should *not* be exepted.
+
+## react-native-multiple-choice
 A cross-platform (iOS / Android) single and multiple-choice React Native component.
 
-## Install
+### Install
 
 ```sh
 npm i react-native-multiple-choice --save
 ```
 
-## Usage
+### Usage
 
 Here is an overview of the component usage.
 
@@ -26,7 +31,7 @@ Here is an overview of the component usage.
 />
 ```
 
-## Props
+### Props
 
 * `style - {}` custom style of the list
 * `optionStyle - {}` custom style of the option element
@@ -40,7 +45,7 @@ Here is an overview of the component usage.
 * `renderRow - function(option)` should return a option view
 * `disabled - bool` if set to true component is disabled and can't be interacted with
 
-## Screenshot
+### Screenshot
 
 ![example](https://raw.githubusercontent.com/d-a-n/react-native-multiple-choice/master/assets/images/screenshot.png)
 
