@@ -22,8 +22,8 @@ const propTypes = {
     renderSeparator: PropTypes.func,
     renderRow: PropTypes.func,
     renderText: PropTypes.func,
-    style: propTypes.style,
-    optionStyle: propTypes.style,
+    style: PropTypes.style,
+    optionStyle: PropTypes.style,
     disabled: PropTypes.bool
 };
 const defaultProps = {
