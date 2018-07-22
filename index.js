@@ -1,17 +1,11 @@
-'use strict';
+"use strict"
 
-import React from 'react'
+import React from "react"
 import PropTypes from "prop-types"
-import {
-  Text,
-  TouchableOpacity,
-  View,
-  Image,
-  ListView
-} from 'react-native';
+import { Text, TouchableOpacity, View, Image, ListView } from "react-native"
 
-import BaseComponent from './BaseComponent'
-import Styles from './styles'
+import BaseComponent from "./BaseComponent"
+import Styles from "./styles"
 
 const propTypes = {
     options: PropTypes.array.isRequired,
@@ -24,144 +18,148 @@ const propTypes = {
     renderText: PropTypes.func,
     style: PropTypes.style,
     optionStyle: PropTypes.style,
-    disabled: PropTypes.bool
-};
+    disabled: PropTypes.bool,
+    comparisonFunction: PropTypes.func, // ( a ) => (b) => boolean
+}
 const defaultProps = {
     options: [],
     selectedOptions: [],
-    onSelection(option){},
-    style:{},
-    optionStyle:{},
-    disabled: false
-};
+    onSelection(option) {},
+    style: {},
+    optionStyle: {},
+    disabled: false,
+    comparisonFunction: a => b => a == b,
+}
 
 class MultipleChoice extends BaseComponent {
-
     constructor(props) {
-        super(props);
+        super(props)
 
-        const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => true});
-        this.ds = ds;
+        const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => true })
+        this.ds = ds
 
         this.state = {
             dataSource: ds.cloneWithRows(this.props.options),
             selectedOptions: this.props.selectedOptions || [],
-            disabled: this.props.disabled
-        };
+            disabled: this.props.disabled,
+        }
 
-        this._bind(
-            '_renderRow',
-            '_selectOption',
-            '_isSelected',
-            '_updateSelectedOptions'
-        );
+        this._bind("_renderRow", "_selectOption", "_isSelected", "_updateSelectedOptions")
     }
 
     componentWillReceiveProps(nextProps) {
-        this._updateSelectedOptions(nextProps.selectedOptions);
+        this._updateSelectedOptions(nextProps.selectedOptions)
         this.setState({
-            disabled: nextProps.disabled
-        });
+            disabled: nextProps.disabled,
+        })
     }
     _updateSelectedOptions(selectedOptions) {
         this.setState({
             selectedOptions,
-            dataSource: this.ds.cloneWithRows(this.props.options)
-        });
+            dataSource: this.ds.cloneWithRows(this.props.options),
+        })
     }
 
     _validateMaxSelectedOptions() {
-        const maxSelectedOptions = this.props.maxSelectedOptions;
-        const selectedOptions = this.state.selectedOptions;
+        const maxSelectedOptions = this.props.maxSelectedOptions
+        const selectedOptions = this.state.selectedOptions
 
-        if (maxSelectedOptions && selectedOptions.length > 0 && selectedOptions.length >= maxSelectedOptions) {
-            selectedOptions.splice(0, 1);
+        if (
+            maxSelectedOptions &&
+            selectedOptions.length > 0 &&
+            selectedOptions.length >= maxSelectedOptions
+        ) {
+            selectedOptions.splice(0, 1)
         }
 
-        this._updateSelectedOptions(selectedOptions);
+        this._updateSelectedOptions(selectedOptions)
     }
 
     _selectOption(selectedOption) {
-
-        let selectedOptions = this.state.selectedOptions;
-        const index = selectedOptions.indexOf(selectedOption);
+        let selectedOptions = this.state.selectedOptions
+        const index = selectedOptions.findIndex(
+            this.props.comparisonFunction(selectedOption),
+        )
 
         if (index === -1) {
-            this._validateMaxSelectedOptions();
-            selectedOptions.push(selectedOption);
+            this._validateMaxSelectedOptions()
+            selectedOptions.push(selectedOption)
         } else {
-            selectedOptions.splice(index, 1);
+            selectedOptions.splice(index, 1)
         }
 
-        this._updateSelectedOptions(selectedOptions);
+        this._updateSelectedOptions(selectedOptions)
 
         //run callback
-        this.props.onSelection(selectedOption);
+        this.props.onSelection(selectedOption)
     }
 
     _isSelected(option) {
-        return this.state.selectedOptions.indexOf(option) !== -1;
+        return !!this.state.selectedOptions.find(this.props.comparisonFunction(option))
     }
 
     _renderIndicator(option) {
         if (this._isSelected(option)) {
-            if(typeof this.props.renderIndicator === 'function') {
-                return this.props.renderIndicator(option);
+            if (typeof this.props.renderIndicator === "function") {
+                return this.props.renderIndicator(option)
             }
 
             return (
                 <Image
                     style={Styles.optionIndicatorIcon}
-                    source={require('./assets/images/check.png')}
+                    source={require("./assets/images/check.png")}
                 />
-            );
+            )
         }
     }
 
     _renderSeparator(option) {
-
-        if(typeof this.props.renderSeparator === 'function') {
-            return this.props.renderSeparator(option);
+        if (typeof this.props.renderSeparator === "function") {
+            return this.props.renderSeparator(option)
         }
 
-        return (<View style={Styles.separator}></View>);
+        return <View style={Styles.separator} />
     }
 
     _renderText(option) {
-
-        if(typeof this.props.renderText === 'function') {
-            return this.props.renderText(option);
+        if (typeof this.props.renderText === "function") {
+            return this.props.renderText(option)
         }
 
-        return (<Text>{option}</Text>);
+        return <Text>{option}</Text>
     }
 
     _renderRow(option) {
-
-        if(typeof this.props.renderRow === 'function') {
-            return this.props.renderRow(option);
+        if (typeof this.props.renderRow === "function") {
+            return this.props.renderRow(option)
         }
 
-        const disabled = this.state.disabled;
+        const disabled = this.state.disabled
         return (
-
             <View style={this.props.optionStyle}>
                 <TouchableOpacity
                     activeOpacity={disabled ? 1 : 0.7}
-                    onPress={!disabled ? ()=>{this._selectOption(option)} : null}
-                >
+                    onPress={
+                        !disabled
+                            ? () => {
+                                  this._selectOption(option)
+                              }
+                            : null
+                    }>
                     <View>
-                        <View
-                            style={Styles.row}
-                        >
-                            <View style={Styles.optionLabel}>{this._renderText(option)}</View>
-                            <View style={Styles.optionIndicator}>{this._renderIndicator(option)}</View>
+                        <View style={Styles.row}>
+                            <View style={Styles.optionLabel}>
+                                {this._renderText(option)}
+                            </View>
+                            <View style={Styles.optionIndicator}>
+                                {this._renderIndicator(option)}
+                            </View>
                         </View>
                     </View>
                 </TouchableOpacity>
                 {this._renderSeparator(option)}
             </View>
-        );
+        )
     }
 
     render() {
@@ -171,11 +169,11 @@ class MultipleChoice extends BaseComponent {
                 dataSource={this.state.dataSource}
                 renderRow={this._renderRow}
             />
-        );
+        )
     }
-};
+}
 
-MultipleChoice.propTypes = propTypes;
-MultipleChoice.defaultProps = defaultProps;
+MultipleChoice.propTypes = propTypes
+MultipleChoice.defaultProps = defaultProps
 
-module.exports = MultipleChoice;
+module.exports = MultipleChoice
