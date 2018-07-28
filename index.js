@@ -2,7 +2,7 @@
 
 import React from "react"
 import PropTypes from "prop-types"
-import { Text, TouchableOpacity, View, Image, ListView } from "react-native"
+import { Text, TouchableOpacity, View, Image, ListView, ViewPropTypes } from "react-native"
 
 import BaseComponent from "./BaseComponent"
 import Styles from "./styles"
@@ -16,8 +16,8 @@ const propTypes = {
     renderSeparator: PropTypes.func,
     renderRow: PropTypes.func,
     renderText: PropTypes.func,
-    style: PropTypes.style,
-    optionStyle: PropTypes.style,
+    style: ViewPropTypes,
+    optionStyle: ViewPropTypes,
     disabled: PropTypes.bool,
     comparisonFunction: PropTypes.func, // ( a ) => (b) => boolean
 }
